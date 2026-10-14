@@ -1,0 +1,39 @@
+
+<!-- weak code -->
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Comments</title>
+</head>
+<body>
+  <div id="comments"></div>
+  <a id="back" href="/">Back</a>
+
+  <script>
+  async function loadComments() {
+    const params = new URLSearchParams(location.search);
+    const postId = params.get("post");
+    const res = await fetch("/api/comments?post=" + postId);
+    const items = await res.json();
+    const box = document.getElementById("comments");
+    items.forEach(c => {
+      box.innerHTML += "<div class='c'><b>" + c.author + "</b>: "
+                     + c.text + "</div>";
+    });
+    document.title = "Comments for " + postId;
+    const next = params.get("next");
+    if (next) {
+      document.getElementById("back").href = next;
+    }
+  }
+  loadComments();
+  </script>
+</body>
+</html>
+
+<!-- 1. Stored XSS via comment author and text
+ 2. XSS / open-redirect via the next parameter
+ -->
+
